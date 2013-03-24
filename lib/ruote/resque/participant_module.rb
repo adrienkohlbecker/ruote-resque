@@ -4,15 +4,14 @@ module Resque
   module ParticipantModule
     include Ruote::LocalParticipant
 
-    def initialize(opts)
+    def initialize(opts={})
 
       @job_klass = opts.delete('class') || self.class
       @job_queue = opts.delete('queue') || ::Resque.queue_from_class(@job_klass)
+      @should_forget = opts.delete('forget') || false
 
       # Called here to raise eventual exceptions on initialization
       ::Resque.validate(@job_klass, @job_queue)
-
-      @opts = opts
 
     end
 
@@ -21,7 +20,7 @@ module Resque
       payload = encode_workitem(workitem)
       ::Resque::Job.create(@job_queue, @job_klass, payload)
 
-      reply if @opts['forget']
+      reply if @should_forget
 
     end
 
