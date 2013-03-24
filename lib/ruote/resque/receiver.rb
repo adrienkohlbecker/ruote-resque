@@ -3,13 +3,9 @@ module Resque
 
   class Receiver < ::Ruote::Receiver
 
-      # cwes = context, worker, engine or storage
-      #
       def initialize(engine, options={})
 
         super(engine, options)
-
-        LOGGER.info "starting resque thread"
 
         Thread.new do
           listen
@@ -20,47 +16,39 @@ module Resque
 
       def listen
 
-        LOGGER.info "listen"
         loop do
+
           job = ::Resque.reserve(Ruote::Resque.configuration.reply_queue)
+
           if job
-            LOGGER.debug job.args
+            Ruote::Resque.logger.debug job.args
             process(job)
           else
-            LOGGER.debug "no jobs"
+            Ruote::Resque.logger.debug "no jobs"
             sleep Ruote::Resque.configuration.interval
           end
+
         end
 
       end
 
       def process(job)
-        begin
-          item = job.args.first
-        if item['error'] && item['fei']
-          raise_error(item)
-        elsif item['fields'] && item['fei']
-          receive(item)
-        elsif item['process_definition'] || item['definition']
-          launch(item)
+
+        workitem = job.args.first
+
+        if workitem['error'] && workitem['fei']
+          raise_error(workitem)
+        elsif workitem['fields'] && workitem['fei']
+          receive(workitem)
         else
-          raise ArgumentError.new("cannot receive or launch #{item.inspect}")
+          raise ArgumentError.new("cannot receive #{workitem.inspect}")
         end
-      rescue => e
-        puts e
-      end
-        # elsif type == 'launchitem'
 
-        #   pdef, fields, variables = data
-
-        #   launch(pdef, fields, variables)
-
-        #else simply drop
       end
 
-      def raise_error(h)
+      def raise_error(workitem)
 
-        err = h.delete('error')
+        err = workitem.delete('error')
 
         message   = "#{err['class']}: #{err['message']}"
         backtrace = err['trace']
@@ -69,7 +57,7 @@ module Resque
         error.set_backtrace(backtrace) if backtrace
 
         error_handler = @context.error_handler
-        error_handler.action_handle('error', h['fei'], error)
+        error_handler.action_handle('error', workitem['fei'], error)
 
       end
 

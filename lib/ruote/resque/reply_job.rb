@@ -7,7 +7,7 @@ module Resque
       Ruote::Resque.configuration.reply_queue
     end
 
-    def self.perform
+    def self.perform(*args)
       #noop
     end
 
