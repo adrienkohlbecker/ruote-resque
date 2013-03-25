@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/adrienkohlbecker/ruote-resque.png)](https://travis-ci.org/adrienkohlbecker/ruote-resque) [![Code Climate](https://codeclimate.com/github/adrienkohlbecker/ruote-resque.png)](https://codeclimate.com/github/adrienkohlbecker/ruote-resque) [![Dependency Status](https://gemnasium.com/adrienkohlbecker/ruote-resque.png)](https://gemnasium.com/adrienkohlbecker/ruote-resque)
+
 # Ruote::Resque
 
 TODO: Write a gem description
