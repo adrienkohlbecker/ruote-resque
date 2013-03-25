@@ -19,6 +19,7 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency 'resque'
   gem.add_runtime_dependency 'ruote'
+  gem.add_runtime_dependency 'json' # Ruby 1.8.7
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
