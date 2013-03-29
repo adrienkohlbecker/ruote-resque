@@ -1,26 +1,29 @@
-# -*- encoding: utf-8 -*-
+# coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'ruote/resque/version'
 
-Gem::Specification.new do |gem|
-  gem.name          = "ruote-resque"
-  gem.version       = Ruote::Resque::VERSION
-  gem.authors       = ["Adrien Kohlbecker"]
-  gem.email         = ["adrien.kohlbecker@gmail.com"]
-  gem.description   = %q{Resque participant/receiver pair for Ruote}
-  gem.summary       = %q{Resque participant/receiver pair for Ruote}
-  gem.homepage      = "https://github.com/adrienkohlbecker/ruote-resque"
+Gem::Specification.new do |spec|
+  spec.name          = "ruote-resque"
+  spec.version       = Ruote::Resque::VERSION
+  spec.authors       = ["Adrien Kohlbecker"]
+  spec.email         = ["adrien.kohlbecker@gmail.com"]
+  spec.description   = %q{Resque participant/receiver pair for Ruote}
+  spec.summary       = %q{Resque participant/receiver pair for Ruote}
+  spec.homepage      = "https://github.com/adrienkohlbecker/ruote-resque"
+  spec.license       = "MIT"
 
-  gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ["lib"]
+  spec.files         = `git ls-files`.split($/)
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.require_paths = ["lib"]
 
-  gem.add_runtime_dependency 'resque'
-  gem.add_runtime_dependency 'ruote'
-  gem.add_runtime_dependency 'json' # Ruby 1.8.7
+  spec.add_runtime_dependency 'resque'
+  spec.add_runtime_dependency 'ruote'
+  spec.add_runtime_dependency 'json' # Ruby 1.8.7
 
-  gem.add_development_dependency 'rake'
-  gem.add_development_dependency 'rspec'
+  spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec'
+  spec.add_development_dependency 'mutant'
 end

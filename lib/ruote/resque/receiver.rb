@@ -54,6 +54,5 @@ module Resque
 
   end
 
-  class RemoteError < StandardError; end
 end
 end
