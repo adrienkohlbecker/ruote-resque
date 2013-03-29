@@ -18,7 +18,7 @@ module Resque
 
         loop do
 
-          job = ::Resque.reserve(Ruote::Resque.configuration.reply_queue)
+          job = reserve
 
           if job
             process(job)
@@ -32,15 +32,34 @@ module Resque
 
       def process(job)
 
+        case job.payload_class.to_s
+        when 'Ruote::Resque::ReplyJob'
+          process_reply(job)
+        when 'Ruote::Resque::LaunchJob'
+          process_launch(job)
+        end
+
+      end
+
+      def process_reply(job)
+
         item = job.args[0]
         error = job.args[1]
         if error
           flunk(item, error)
         elsif item
           receive(item)
-        # elsif item['process_definition'] || item['definition']
-        #   launch(item)
         end
+
+      end
+
+      def process_launch(job)
+
+        process_definition = job.args[0]
+        fields = job.args[1]
+        variables = job.args[2]
+
+        launch(process_definition, fields, variables)
 
       end
 
@@ -50,6 +69,19 @@ module Resque
         args << error['backtrace']
 
         super(h, *args)
+      end
+
+      def reserve
+
+        queues = [Ruote::Resque.configuration.launch_queue, Ruote::Resque.configuration.reply_queue]
+        queues.each do |queue|
+          if job = ::Resque.reserve(queue)
+            return job
+          end
+        end
+
+        return nil
+
       end
 
   end

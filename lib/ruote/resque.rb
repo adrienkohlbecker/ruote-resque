@@ -4,6 +4,7 @@ require 'ruote/resque/job'
 require 'ruote/resque/participant'
 require 'ruote/resque/receiver'
 require 'ruote/resque/reply_job'
+require 'ruote/resque/launch_job'
 require 'ruote/resque/version'
 
 module Ruote
@@ -23,8 +24,13 @@ module Ruote
 
       class Configuration
         attr_accessor :reply_queue
+        attr_accessor :launch_queue
         attr_accessor :logger
         attr_accessor :interval
+      end
+
+      def launch_process(process_definition, fields={}, variables={})
+        ::Resque.enqueue(Ruote::Resque::LaunchJob, process_definition, fields, variables)
       end
 
     end
@@ -33,7 +39,8 @@ end
 
 # setup default configuration
 Ruote::Resque.configure do |config|
-  config.reply_queue = :ruote_replies
+  config.reply_queue = :ruote_reply
+  config.launch_queue = :ruote_launch
   config.logger = Logger.new(STDOUT).tap { |log| log.level = Logger::INFO }
   config.interval = 5
 end
