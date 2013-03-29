@@ -36,11 +36,11 @@ describe Ruote::Resque::Receiver do
       worker.term_timeout = 4
       worker.term_child = true
       #worker.verbose = true
-      worker.work(0.1)
+      worker.work(1)
     end
 
     Ruote::Resque.configure do |config|
-      config.interval = 0.1
+      config.interval = 1
     end
     Ruote::Resque::Receiver.new(@board)
 
@@ -74,7 +74,7 @@ describe Ruote::Resque::Receiver do
 
       wfid = @board.launch(definition)
 
-      r = @board.wait_for(wfid, :timeout => 0.5)
+      r = @board.wait_for(wfid, :timeout => 5)
         # wait until process terminates or hits an error
 
       r['workitem'].should_not == nil
@@ -95,7 +95,7 @@ describe Ruote::Resque::Receiver do
 
       wfid = @board.launch(definition)
 
-      r = @board.wait_for(wfid, :timeout => 0.5)
+      r = @board.wait_for(wfid, :timeout => 5)
         # wait until process terminates or hits an error
 
       r['workitem'].should_not == nil
@@ -115,7 +115,7 @@ describe Ruote::Resque::Receiver do
 
       wfid = @board.launch(definition)
 
-      r = @board.wait_for(wfid, :timeout => 0.5)
+      r = @board.wait_for(wfid, :timeout => 5)
       error = @board.errors(wfid).first
 
       expect(error.class).to eq(Ruote::ProcessError)
@@ -126,7 +126,7 @@ describe Ruote::Resque::Receiver do
       @board.register_participant 'resque_bravo', BravoJob
       @board.replay_at_error(error)
 
-      r = @board.wait_for(wfid, :timeout => 0.5)
+      r = @board.wait_for(wfid, :timeout => 5)
 
       r['workitem'].should_not == nil
       r['workitem']['fields']['block_alpha'].should == 'was here'
