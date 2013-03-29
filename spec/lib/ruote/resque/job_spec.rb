@@ -93,9 +93,7 @@ describe Ruote::Resque::Job do
       end
 
       it 'with the workitem and the error as arguments' do
-        expected_args = workitem
-        expected_args['error'] = expected_error
-        expect(enqued_job.args).to eq [expected_args]
+        expect(enqued_job.args).to eq [workitem, expected_error]
       end
 
     end

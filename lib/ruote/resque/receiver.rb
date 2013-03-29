@@ -3,9 +3,9 @@ module Resque
 
   class Receiver < ::Ruote::Receiver
 
-      def initialize(engine, options={})
+      def initialize(*args)
 
-        super(engine, options)
+        super
 
         Thread.new do
           listen
@@ -21,10 +21,8 @@ module Resque
           job = ::Resque.reserve(Ruote::Resque.configuration.reply_queue)
 
           if job
-            Ruote::Resque.logger.debug job.args
             process(job)
           else
-            Ruote::Resque.logger.debug "no jobs"
             sleep Ruote::Resque.configuration.interval
           end
 
@@ -34,31 +32,24 @@ module Resque
 
       def process(job)
 
-        workitem = job.args.first
-
-        if workitem['error'] && workitem['fei']
-          raise_error(workitem)
-        elsif workitem['fields'] && workitem['fei']
-          receive(workitem)
-        else
-          raise ArgumentError.new("cannot receive #{workitem.inspect}")
+        item = job.args[0]
+        error = job.args[1]
+        if error
+          flunk(item, error)
+        elsif item
+          receive(item)
+        # elsif item['process_definition'] || item['definition']
+        #   launch(item)
         end
 
       end
 
-      def raise_error(workitem)
+      def flunk(h, error)
 
-        err = workitem.delete('error')
+        args = [ Ruote.constantize(error['class']), error['message'] ]
+        args << error['backtrace']
 
-        message   = "#{err['class']}: #{err['message']}"
-        backtrace = err['trace']
-
-        error = RemoteError.new(message)
-        error.set_backtrace(backtrace) if backtrace
-
-        error_handler = @context.error_handler
-        error_handler.action_handle('error', workitem['fei'], error)
-
+        super(h, *args)
       end
 
   end
