@@ -7,9 +7,15 @@ module Resque
 
         super
 
-        Thread.new do
+        @listener = Thread.new do
           listen
         end
+      end
+
+      def shutdown
+
+        @listener.kill
+
       end
 
       protected

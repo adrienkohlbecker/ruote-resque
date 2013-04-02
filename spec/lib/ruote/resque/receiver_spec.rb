@@ -23,14 +23,14 @@ describe Ruote::Resque::Receiver do
 
   before :each do
 
-    @board = Ruote::Dashboard.new(Ruote::Worker.new(Ruote::FsStorage.new('spec/tmp/ruote_work')))
+    @board = Ruote::Dashboard.new(Ruote::Worker.new(Ruote::HashStorage.new))
     #@board.noisy = true
 
     @board.register /^block_/ do |workitem|
       workitem.fields[workitem.participant_name] = 'was here'
     end
 
-    Thread.new do
+    @worker = Thread.new do
       queues = ['rspec']
       worker = Resque::Worker.new(*queues)
       worker.term_timeout = 4
@@ -42,14 +42,17 @@ describe Ruote::Resque::Receiver do
     Ruote::Resque.configure do |config|
       config.interval = 1
     end
-    Ruote::Resque::Receiver.new(@board)
+
+    @receiver = Ruote::Resque::Receiver.new(@board)
 
   end
 
   after :each do
 
     @board.shutdown
-    system('rm -rf spec/tmp/ruote_work')
+    @board.storage.purge!
+    @receiver.shutdown
+    @worker.kill
 
     Ruote::Resque.configure do |config|
       config.interval = 5
