@@ -90,8 +90,7 @@ module Resque
 
       def flunk(h, error)
 
-        args = [ Ruote.constantize(error['class']), error['message'] ]
-        args << error['backtrace']
+        args = [ Ruote.constantize(error['class']), error['message'], error['backtrace'] ]
 
         super(h, *args)
       end
