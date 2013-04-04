@@ -33,6 +33,7 @@ module Resque
                 process(job)
               rescue => e
                 job.fail(e)
+                raise
               end
             else
               sleep Ruote::Resque.configuration.interval
@@ -57,6 +58,8 @@ module Resque
           process_reply(job)
         when 'Ruote::Resque::LaunchJob'
           process_launch(job)
+        else
+          raise ArgumentError.new("Not a valid job: #{job.payload_class.to_s}")
         end
 
       end
