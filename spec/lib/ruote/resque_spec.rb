@@ -29,19 +29,6 @@ describe Ruote::Resque do
 
     end
 
-    context '::launch_queue' do
-
-      it 'is :ruote_launch by default' do
-        expect(Ruote::Resque.configuration.launch_queue).to eq :ruote_launch
-      end
-
-      it 'is setable' do
-        Ruote::Resque.configuration.launch_queue = :another_queue
-        expect(Ruote::Resque.configuration.launch_queue).to eq :another_queue
-      end
-
-    end
-
     context '::interval' do
 
       it 'is 5 by default' do

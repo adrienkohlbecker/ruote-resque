@@ -26,7 +26,7 @@ module Resque
 
           begin
 
-            job = reserve
+            job = ::Resque.reserve(Ruote::Resque.configuration.reply_queue)
 
             if job
               begin
@@ -53,18 +53,10 @@ module Resque
 
       def process(job)
 
-        case job.payload_class.to_s
-        when 'Ruote::Resque::ReplyJob'
-          process_reply(job)
-        when 'Ruote::Resque::LaunchJob'
-          process_launch(job)
-        else
-          raise ArgumentError.new("Not a valid job: #{job.payload_class.to_s}")
+        job_class = job.payload_class.to_s
+        if job_class != 'Ruote::Resque::ReplyJob'
+          raise ArgumentError.new("Not a valid job: #{job_class}")
         end
-
-      end
-
-      def process_reply(job)
 
         item = job.args[0]
         error = job.args[1]
@@ -81,34 +73,11 @@ module Resque
 
       end
 
-      def process_launch(job)
-
-        process_definition = job.args[0]
-        fields = job.args[1]
-        variables = job.args[2]
-
-        launch(process_definition, fields, variables)
-
-      end
-
       def flunk(h, error)
 
         args = [ Ruote.constantize(error['class']), error['message'], error['backtrace'] ]
 
         super(h, *args)
-      end
-
-      def reserve
-
-        queues = [Ruote::Resque.configuration.launch_queue, Ruote::Resque.configuration.reply_queue]
-        queues.each do |queue|
-          if job = ::Resque.reserve(queue)
-            return job
-          end
-        end
-
-        return nil
-
       end
 
   end

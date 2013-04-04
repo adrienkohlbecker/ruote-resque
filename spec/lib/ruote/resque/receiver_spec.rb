@@ -142,37 +142,4 @@ describe Ruote::Resque::Receiver do
     end
   end
 
-  context 'process launch flow' do
-
-    before(:each) do
-      @board.register_participant 'resque_bravo', BravoJob
-    end
-
-    it 'sets the fields' do
-
-      fields = {'test' => 'im a field'}
-
-      Ruote::Resque.launch_process( Ruote.define { noop }, fields)
-
-      r = @board.wait_for('terminated', :timeout => 5)
-
-      r['workitem'].should_not == nil
-      r['workitem']['fields'].should == fields
-
-    end
-
-    it 'sets the variables' do
-
-      variables = {'test' => 'im a variable'}
-
-      Ruote::Resque.launch_process(Ruote.define { noop }, {}, variables)
-
-      r = @board.wait_for('terminated', :timeout => 5)
-
-      r['workitem'].should_not == nil
-      r['variables'].should == variables
-
-    end
-
-  end
 end
