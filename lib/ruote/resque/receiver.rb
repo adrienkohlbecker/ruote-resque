@@ -65,9 +65,14 @@ module Resque
 
         item = job.args[0]
         error = job.args[1]
+
+        if not (item && item['fields'] && item['fei'])
+          raise ArgumentError.new("Not a workitem: #{item.inspect}")
+        end
+
         if error
           flunk(item, error)
-        elsif item
+        else
           receive(item)
         end
 
