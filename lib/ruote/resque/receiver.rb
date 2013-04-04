@@ -24,16 +24,30 @@ module Resque
 
         loop do
 
-          job = reserve
+          begin
 
-          if job
-            process(job)
-          else
-            sleep Ruote::Resque.configuration.interval
+            job = reserve
+
+            if job
+              begin
+                process(job)
+              rescue => e
+                job.fail(e)
+              end
+            else
+              sleep Ruote::Resque.configuration.interval
+            end
+
+          rescue => e
+            handle_error(e)
           end
 
         end
 
+      end
+
+      def handle_error(e)
+        Ruote::Resque.logger.error(e)
       end
 
       def process(job)
