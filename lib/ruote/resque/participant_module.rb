@@ -37,6 +37,10 @@ module Resque
 
     end
 
+    def do_not_thread
+      true
+    end
+
   end
 end
 end
