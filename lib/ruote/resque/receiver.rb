@@ -8,7 +8,14 @@ module Resque
         super
 
         @listener = Thread.new do
-          listen
+          loop do
+            begin
+              work
+            rescue => e
+              Ruote::Resque.logger.error("*** UNCAUGHT EXCEPTION IN RUOTE::RESQUE::RECEIVER ***")
+              Ruote::Resque.logger.error(e)
+            end
+          end
         end
       end
 
@@ -20,55 +27,55 @@ module Resque
 
       protected
 
-      def listen
+      def work
 
-        loop do
+        begin
 
-          begin
+          job = ::Resque.reserve(Ruote::Resque.configuration.reply_queue)
 
-            job = ::Resque.reserve(Ruote::Resque.configuration.reply_queue)
-
-            if job
-              begin
-                process(job)
-              rescue => e
-                job.fail(e)
-                raise
-              end
-            else
-              sleep Ruote::Resque.configuration.interval
-            end
-
-          rescue => e
-            handle_error(e)
+          if job
+            process(job)
+          else
+            sleep Ruote::Resque.configuration.interval
           end
 
+        rescue => e
+          handle_error(e)
         end
 
       end
 
       def handle_error(e)
+        # to be overridden by implementors
         Ruote::Resque.logger.error(e)
       end
 
       def process(job)
 
-        job_class = job.payload_class.to_s
-        if job_class != 'Ruote::Resque::ReplyJob'
-          raise ArgumentError.new("Not a valid job: #{job_class}")
-        end
+        begin
 
-        item = job.args[0]
-        error = job.args[1]
+          job_class = job.payload_class.to_s
+          if job_class != 'Ruote::Resque::ReplyJob'
+            raise ArgumentError.new("Not a valid job: #{job_class}")
+          end
 
-        if not (item && item['fields'] && item['fei'])
-          raise ArgumentError.new("Not a workitem: #{item.inspect}")
-        end
+          item = job.args[0]
+          error = job.args[1]
 
-        if error
-          flunk(item, error)
-        else
-          receive(item)
+          if not (item && item['fields'] && item['fei'])
+            raise ArgumentError.new("Not a workitem: #{item.inspect}")
+          end
+
+          if error
+            flunk(item, error)
+          else
+            receive(item)
+          end
+
+        rescue => e
+          # Fail it on Resque, then raise to let handle_error do it's work
+          job.fail(e)
+          raise
         end
 
       end
