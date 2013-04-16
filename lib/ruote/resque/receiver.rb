@@ -86,8 +86,8 @@ module Resque
           klass = Ruote.constantize(error['class'])
         rescue NameError => e
           cls = error['class'].split('::').last
-          const_set(cls, Class.new(StandardError))
-          klass = const_get(cls)
+          Object.const_set(cls, Class.new(StandardError))
+          klass = Object.const_get(cls)
         end
 
         args = [ klass, error['message'], error['backtrace'] ]
