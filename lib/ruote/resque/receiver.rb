@@ -85,10 +85,11 @@ module Resque
         begin
           klass = Ruote.constantize(error['class'])
         rescue NameError => e
-          klass = Object.const_set(error['class'].split('::').last, Class.new(StandardError))
+          klass = Object.const_set(error['class'].split('::').last, Class.new(StandardError)) # TODO improve for Resque::DirtyExit for example
         end
 
-        args = [ klass, error['message'], error['backtrace'] ]
+        args = [ klass, error['message'] ]
+        args << error['backtrace'] if error['backtrace']
 
         super(h, *args)
       end
