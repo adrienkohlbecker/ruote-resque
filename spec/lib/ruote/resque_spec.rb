@@ -15,7 +15,7 @@ describe Ruote::Resque do
   context '::configuration' do
 
     it 'returns a Configuration object' do
-      expect(Ruote::Resque.configuration.class.name.split('::').last).to eq 'Configuration'
+      expect(Ruote::Resque.configuration.class.to_s).to eq 'Ruote::Resque::Configuration'
     end
 
     context '::reply_queue' do

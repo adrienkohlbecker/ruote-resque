@@ -7,6 +7,13 @@ require 'ruote/resque/version'
 
 module Ruote
   module Resque
+
+    class Configuration
+      attr_accessor :reply_queue
+      attr_accessor :logger
+      attr_accessor :interval
+    end
+
     class << self
 
       attr_accessor :configuration
@@ -20,16 +27,9 @@ module Ruote
       end
 
       def configure
-        self.configuration ||= Configuration.new
+        self.configuration ||=Ruote::Resque::Configuration.new
         yield(configuration) if block_given?
       end
-
-      class Configuration
-        attr_accessor :reply_queue
-        attr_accessor :logger
-        attr_accessor :interval
-      end
-
     end
   end
 end
