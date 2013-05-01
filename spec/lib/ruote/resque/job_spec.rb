@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'spec_helper'
 
 describe Ruote::Resque::Job do
@@ -72,12 +74,14 @@ describe Ruote::Resque::Job do
     let(:workitem) { {'is_rspec_awesome' => true} }
     let(:enqued_job) { ::Resque.reserve(Ruote::Resque.configuration.reply_queue) }
     let(:exception) { RuntimeError.new('i am a failure') }
-    let(:expected_job_args) { [
-          exception.class.name,
-          exception.message,
-          exception.backtrace,
-          workitem
-        ] }
+    let(:expected_job_args) do
+      [
+        exception.class.name,
+        exception.message,
+        exception.backtrace,
+        workitem
+      ]
+    end
 
     context 'enqueues a job' do
 

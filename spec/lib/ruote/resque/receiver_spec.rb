@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'spec_helper'
 require 'ruote/storage/fs_storage'
 
@@ -26,7 +28,7 @@ describe Ruote::Resque::Receiver do
     @board = Ruote::Dashboard.new(Ruote::Worker.new(Ruote::HashStorage.new))
     #@board.noisy = true
 
-    @board.register /^block_/ do |workitem|
+    @board.register(/^block_/) do |workitem|
       workitem.fields[workitem.participant_name] = 'was here'
     end
 
@@ -82,11 +84,11 @@ describe Ruote::Resque::Receiver do
         r = @board.wait_for(wfid, :timeout => 5)
           # wait until process terminates or hits an error
 
-        r['workitem'].should_not == nil
-        r['workitem']['fields']['block_alpha'].should == 'was here'
-        r['workitem']['fields']['resque_bravo'].should == 'was here'
-        r['workitem']['fields']['block_charly'].should == 'was here'
-        r['workitem']['fields']['block_delta'].should == nil
+        r['workitem'].should_not eq(nil)
+        r['workitem']['fields']['block_alpha'].should eq('was here')
+        r['workitem']['fields']['resque_bravo'].should eq('was here')
+        r['workitem']['fields']['block_charly'].should eq('was here')
+        r['workitem']['fields']['block_delta'].should eq(nil)
       end
     end
 
@@ -103,11 +105,11 @@ describe Ruote::Resque::Receiver do
         r = @board.wait_for(wfid, :timeout => 5)
           # wait until process terminates or hits an error
 
-        r['workitem'].should_not == nil
-        r['workitem']['fields']['block_alpha'].should == 'was here'
-        r['workitem']['fields']['resque_bravo'].should == nil
-        r['workitem']['fields']['block_charly'].should == nil
-        r['workitem']['fields']['block_delta'].should == 'was here'
+        r['workitem'].should_not eq(nil)
+        r['workitem']['fields']['block_alpha'].should eq('was here')
+        r['workitem']['fields']['resque_bravo'].should eq(nil)
+        r['workitem']['fields']['block_charly'].should eq(nil)
+        r['workitem']['fields']['block_delta'].should eq('was here')
       end
 
       it 'can be replayed from Ruote' do
@@ -133,10 +135,10 @@ describe Ruote::Resque::Receiver do
 
         r = @board.wait_for(wfid, :timeout => 5)
 
-        r['workitem'].should_not == nil
-        r['workitem']['fields']['block_alpha'].should == 'was here'
-        r['workitem']['fields']['resque_bravo'].should == 'was here'
-        r['workitem']['fields']['block_charly'].should == 'was here'
+        r['workitem'].should_not eq(nil)
+        r['workitem']['fields']['block_alpha'].should eq('was here')
+        r['workitem']['fields']['resque_bravo'].should eq('was here')
+        r['workitem']['fields']['block_charly'].should eq('was here')
 
       end
     end

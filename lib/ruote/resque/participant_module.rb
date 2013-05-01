@@ -1,10 +1,12 @@
+# encoding: UTF-8
+
 module Ruote
 module Resque
 
   module ParticipantModule
     include Ruote::LocalParticipant
 
-    def initialize(opts={})
+    def initialize(opts = {})
 
       @job_klass = opts.delete('class') || self.class
       @job_queue = opts.delete('queue') || ::Resque.queue_from_class(@job_klass)

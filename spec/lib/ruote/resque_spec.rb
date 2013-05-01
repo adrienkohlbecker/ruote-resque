@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'spec_helper'
 
 describe Ruote::Resque do
@@ -54,7 +56,8 @@ describe Ruote::Resque do
 
       it 'is a setable' do
 
-        class MyLogger < Logger; end
+        class MyLogger < Logger
+        end
         Ruote::Resque.configuration.logger = MyLogger.new(STDOUT)
 
         expect(Ruote::Resque.configuration.logger.class).to eq MyLogger

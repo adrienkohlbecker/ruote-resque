@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require 'logger'
 require 'ruote/resque/job'
 require 'ruote/resque/reply_job'
@@ -9,7 +11,7 @@ module Ruote
 
       attr_accessor :configuration
 
-      def reply *args
+      def reply(*args)
         ::Resque.enqueue(Ruote::Resque::ReplyJob, *args)
       end
 
