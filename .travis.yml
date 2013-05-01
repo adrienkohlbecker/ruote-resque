@@ -12,10 +12,3 @@ rvm:
 script: bundle exec rspec spec
 services:
   - redis-server
-matrix:
-  allow_failures:
-    - rvm: "2.0.0"
-    - rvm: jruby-18mode
-    - rvm: jruby-19mode
-    - rvm: rbx-18mode
-    - rvm: rbx-19mode
