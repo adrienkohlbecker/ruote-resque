@@ -13,6 +13,10 @@ describe Ruote::Resque::ParticipantModule do
     expect(Ruote::Resque::ParticipantModule.ancestors).to include(Ruote::LocalParticipant)
   end
 
+  it 'does not thread' do
+    expect(Participant.new.do_not_thread).to be_true
+  end
+
   context '#initialize' do
 
     it 'takes a job class in options' do
