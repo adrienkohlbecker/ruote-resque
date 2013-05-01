@@ -72,11 +72,12 @@ describe Ruote::Resque::Job do
     let(:workitem) { {'is_rspec_awesome' => true} }
     let(:enqued_job) { ::Resque.reserve(Ruote::Resque.configuration.reply_queue) }
     let(:exception) { RuntimeError.new('i am a failure') }
-    let(:expected_error) { {
-      'class' => exception.class.name,
-      'message' => exception.message,
-      'backtrace' => exception.backtrace
-    } }
+    let(:expected_job_args) { [
+          exception.class.name,
+          exception.message,
+          exception.backtrace,
+          workitem
+        ] }
 
     context 'enqueues a job' do
 
@@ -93,7 +94,7 @@ describe Ruote::Resque::Job do
       end
 
       it 'with the workitem and the error as arguments' do
-        expect(enqued_job.args).to eq [workitem, expected_error]
+        expect(enqued_job.args).to eq expected_job_args
       end
 
     end

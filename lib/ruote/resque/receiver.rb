@@ -59,15 +59,15 @@ module Resque
             raise ArgumentError.new("Not a valid job: #{job_class}")
           end
 
-          item = job.args[0]
-          error = job.args[1]
+          job_arguments = job.args
+          item = job_arguments.pop
 
           if not (item && item['fields'] && item['fei'])
             raise ArgumentError.new("Not a workitem: #{item.inspect}")
           end
 
-          if error
-            flunk(item, error)
+          if job_arguments.any?
+            flunk(item, *job_arguments)
           else
             receive(item)
           end
@@ -78,20 +78,6 @@ module Resque
           raise
         end
 
-      end
-
-      def flunk(h, error)
-
-        begin
-          klass = Ruote.constantize(error['class'])
-        rescue NameError => e
-          klass = Object.const_set(error['class'].split('::').last, Class.new(StandardError)) # TODO improve for Resque::DirtyExit for example
-        end
-
-        args = [ klass, error['message'] ]
-        args << error['backtrace'] if error['backtrace']
-
-        super(h, *args)
       end
 
   end
