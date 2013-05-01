@@ -3,84 +3,94 @@
 module Ruote
 module Resque
 
+  class InvalidJob < RuntimeError
+  end
+
+  class InvalidWorkitem < RuntimeError
+  end
+
   class Receiver < ::Ruote::Receiver
 
-      def initialize(*args)
+    def initialize(*args)
+      super
+      @listener = listen
+    end
 
-        super
+    def shutdown
+      @listener.kill
+    end
 
-        @listener = Thread.new do
-          loop do
-            begin
-              work
-            rescue => e
-              Ruote::Resque.logger.error("*** UNCAUGHT EXCEPTION IN RUOTE::RESQUE::RECEIVER ***")
-              Ruote::Resque.logger.error(e)
-            end
-          end
+    def handle_error(e)
+      # to be overridden by implementors
+      Ruote::Resque.logger.error(e)
+    end
+
+    private
+
+    def listen
+
+      Thread.new do
+        loop do
+          work
         end
       end
 
-      def shutdown
+    end
 
-        @listener.kill
+    def work
 
+      reserve
+
+    # handle_error may raise an exception itself
+    # in this case protect the thread
+    rescue => e
+      Ruote::Resque.logger.error('*** UNCAUGHT EXCEPTION IN RUOTE::RESQUE::RECEIVER ***')
+      Ruote::Resque.logger.error(e)
+    end
+
+    def reserve
+
+      if job = ::Resque.reserve(Ruote::Resque.configuration.reply_queue)
+        validate_job(job)
+        process(job)
+      else
+        sleep Ruote::Resque.configuration.interval
       end
 
-      protected
+    rescue => e
+      handle_error(e)
+    end
 
-      def work
+    def process(job)
 
-        begin
+      job_arguments = job.args
+      item = job_arguments.pop
 
-          job = ::Resque.reserve(Ruote::Resque.configuration.reply_queue)
-
-          if job
-            process(job)
-          else
-            sleep Ruote::Resque.configuration.interval
-          end
-
-        rescue => e
-          handle_error(e)
-        end
-
+      if job_arguments.any?
+        flunk(item, *job_arguments)
+      else
+        receive(item)
       end
 
-      def handle_error(e)
-        # to be overridden by implementors
-        Ruote::Resque.logger.error(e)
+    rescue => e
+      # Fail the job on Resque, then raise to let handle_error do it's work
+      job.fail(e)
+      raise
+    end
+
+    def validate_job(job)
+
+      job_class = job.payload_class.to_s
+      unless job_class == 'Ruote::Resque::ReplyJob'
+        raise InvalidJob.new(job_class)
       end
 
-      def process(job)
-
-        begin
-
-          job_class = job.payload_class.to_s
-          if job_class != 'Ruote::Resque::ReplyJob'
-            raise ArgumentError.new("Not a valid job: #{job_class}")
-          end
-
-          job_arguments = job.args
-          item = job_arguments.pop
-
-          if not (item && item['fields'] && item['fei'])
-            raise ArgumentError.new("Not a workitem: #{item.inspect}")
-          end
-
-          if job_arguments.any?
-            flunk(item, *job_arguments)
-          else
-            receive(item)
-          end
-
-        rescue => e
-          # Fail it on Resque, then raise to let handle_error do it's work
-          job.fail(e)
-          raise
-        end
-
+      item = job.args.last
+      unless item.is_a?(Hash) && item['fields'] && item['fei']
+        raise InvalidWorkitem.new(item.inspect)
       end
+
+    end
 
   end
 
