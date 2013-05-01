@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/adrienkohlbecker/ruote-resque.png)](https://travis-ci.org/adrienkohlbecker/ruote-resque) [![Code Climate](https://codeclimate.com/github/adrienkohlbecker/ruote-resque.png)](https://codeclimate.com/github/adrienkohlbecker/ruote-resque) [![Dependency Status](https://gemnasium.com/adrienkohlbecker/ruote-resque.png)](https://gemnasium.com/adrienkohlbecker/ruote-resque)
+[![Build Status](https://travis-ci.org/adrienkohlbecker/ruote-resque.png)](https://travis-ci.org/adrienkohlbecker/ruote-resque) [![Coverage Status](https://coveralls.io/repos/adrienkohlbecker/ruote-resque/badge.png?branch=master)](https://coveralls.io/r/adrienkohlbecker/ruote-resque) [![Code Climate](https://codeclimate.com/github/adrienkohlbecker/ruote-resque.png)](https://codeclimate.com/github/adrienkohlbecker/ruote-resque) [![Dependency Status](https://gemnasium.com/adrienkohlbecker/ruote-resque.png)](https://gemnasium.com/adrienkohlbecker/ruote-resque)
 
 # Ruote::Resque
 

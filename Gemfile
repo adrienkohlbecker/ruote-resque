@@ -12,4 +12,5 @@ end
 group :test do
   gem 'rake'
   gem 'rspec'
+  gem 'coveralls', :require => false
 end

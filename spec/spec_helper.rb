@@ -1,5 +1,8 @@
 # encoding: UTF-8
 
+require 'coveralls'
+Coveralls.wear!
+
 require 'resque'
 require 'ruote/resque'
 
