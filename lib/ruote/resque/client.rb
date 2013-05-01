@@ -9,8 +9,8 @@ module Ruote
 
       attr_accessor :configuration
 
-      def reply workitem, error=nil
-        ::Resque.enqueue(Ruote::Resque::ReplyJob, workitem, error)
+      def reply *args
+        ::Resque.enqueue(Ruote::Resque::ReplyJob, *args)
       end
 
       def logger

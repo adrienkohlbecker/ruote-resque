@@ -4,16 +4,11 @@ module Resque
   module Job
 
     def after_perform_reply_to_ruote(workitem)
-
-      ::Resque.enqueue(Ruote::Resque::ReplyJob, workitem)
-
+      Ruote::Resque.reply(workitem)
     end
 
-    def on_failure_reply_to_ruote(e, workitem)
-
-      error = {:class => e.class.to_s, :message => e.message, :backtrace => e.backtrace}
-      ::Resque.enqueue(Ruote::Resque::ReplyJob, workitem, error)
-
+    def on_failure_reply_to_ruote(exception, workitem)
+      Ruote::Resque.reply(workitem, {:class => exception.class.to_s, :message => exception.message, :backtrace => exception.backtrace})
     end
 
   end
