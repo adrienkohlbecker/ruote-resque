@@ -92,6 +92,36 @@ module Resque
 
     end
 
+    def flunk(workitem, class_name, message, backtrace)
+
+      def conditional_define(constant, value, parent=Object)
+        if parent.const_defined? constant
+          parent.const_get(constant)
+        else
+          parent.const_set(constant, value)
+        end
+      end
+
+      def recursive_define(constant, value, parent=Object)
+
+        arr = constant.split('::')
+        first = arr.shift
+        if arr.empty?
+          conditional_define(first, value, parent)
+        else
+          recursive_define(arr.join('::'), value, conditional_define(first, Class.new, parent))
+        end
+
+      end
+
+      klass = recursive_define(class_name, Class.new(RuntimeError))
+      args = [ klass, message, backtrace ]
+
+      super(workitem, *args)
+
+
+    end
+
   end
 
 end
