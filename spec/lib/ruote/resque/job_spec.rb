@@ -14,7 +14,7 @@ describe Ruote::Resque::Job do
       end
     end
 
-    let(:workitem) { {'is_rspec_awesome' => true} }
+    let(:workitem) { { 'is_rspec_awesome' => true } }
     let(:enqued_job) { ::Resque.reserve(Ruote::Resque.configuration.reply_queue) }
 
     context 'enqueues a job' do
@@ -39,7 +39,7 @@ describe Ruote::Resque::Job do
 
     context 'replies with the mutated workitem' do
 
-      let(:mutated_workitem) { {'is_rspec_awesome' => true, 'is_resque_awesome' => true} }
+      let(:mutated_workitem) { { 'is_rspec_awesome' => true, 'is_resque_awesome' => true } }
 
       before :each do
         Resque.inline = true
@@ -71,7 +71,7 @@ describe Ruote::Resque::Job do
       end
     end
 
-    let(:workitem) { {'is_rspec_awesome' => true} }
+    let(:workitem) { { 'is_rspec_awesome' => true } }
     let(:enqued_job) { ::Resque.reserve(Ruote::Resque.configuration.reply_queue) }
     let(:exception) { RuntimeError.new('i am a failure') }
     let(:expected_job_args) do
@@ -105,7 +105,7 @@ describe Ruote::Resque::Job do
 
     context 'replies with the mutated workitem' do
 
-      let(:mutated_workitem) { {'is_rspec_awesome' => true, 'is_resque_awesome' => true} }
+      let(:mutated_workitem) { { 'is_rspec_awesome' => true, 'is_resque_awesome' => true } }
 
       before :each do
         Resque.inline = true

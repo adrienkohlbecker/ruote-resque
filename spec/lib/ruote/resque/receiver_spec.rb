@@ -26,7 +26,7 @@ describe Ruote::Resque::Receiver do
   before :each do
 
     @board = Ruote::Dashboard.new(Ruote::Worker.new(Ruote::HashStorage.new))
-    #@board.noisy = true
+    # @board.noisy = true
 
     @board.register(/^block_/) do |workitem|
       workitem.fields[workitem.participant_name] = 'was here'
@@ -37,7 +37,7 @@ describe Ruote::Resque::Receiver do
       worker = Resque::Worker.new(*queues)
       worker.term_timeout = 4
       worker.term_child = true
-      #worker.verbose = true
+      # worker.verbose = true
       worker.work(1)
     end
 

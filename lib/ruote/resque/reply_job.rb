@@ -10,7 +10,7 @@ module Resque
     end
 
     def self.perform(*args)
-      #noop
+      # noop
     end
 
   end

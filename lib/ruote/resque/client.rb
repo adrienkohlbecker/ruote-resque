@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'logger'
+require 'ruote/resque/helper'
 require 'ruote/resque/job'
 require 'ruote/resque/reply_job'
 require 'ruote/resque/version'
@@ -27,7 +28,7 @@ module Ruote
       end
 
       def configure
-        self.configuration ||=Ruote::Resque::Configuration.new
+        self.configuration ||= Ruote::Resque::Configuration.new
         yield(configuration) if block_given?
       end
     end
