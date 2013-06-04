@@ -24,6 +24,8 @@ class BravoFailureJob < BravoJob
   end
 end
 
+RUOTE_WAIT_TIMEOUT = 10
+
 describe Ruote::Resque::Receiver do
 
   before :each do
@@ -84,7 +86,7 @@ describe Ruote::Resque::Receiver do
 
         wfid = @board.launch(definition)
 
-        r = @board.wait_for(wfid, :timeout => 5)
+        r = @board.wait_for(wfid, :timeout => RUOTE_WAIT_TIMEOUT)
           # wait until process terminates or hits an error
 
         r['workitem'].should_not eq(nil)
@@ -105,7 +107,7 @@ describe Ruote::Resque::Receiver do
 
         wfid = @board.launch(definition)
 
-        r = @board.wait_for(wfid, :timeout => 5)
+        r = @board.wait_for(wfid, :timeout => RUOTE_WAIT_TIMEOUT)
           # wait until process terminates or hits an error
 
         r['workitem'].should_not eq(nil)
@@ -125,7 +127,7 @@ describe Ruote::Resque::Receiver do
 
         wfid = @board.launch(definition)
 
-        r = @board.wait_for(wfid, :timeout => 5)
+        r = @board.wait_for(wfid, :timeout => RUOTE_WAIT_TIMEOUT)
         error = @board.errors(wfid).first
 
         expect(error.class).to eq(Ruote::ProcessError)
@@ -136,7 +138,7 @@ describe Ruote::Resque::Receiver do
         @board.register_participant 'resque_bravo', BravoJob
         @board.replay_at_error(error)
 
-        r = @board.wait_for(wfid, :timeout => 5)
+        r = @board.wait_for(wfid, :timeout => RUOTE_WAIT_TIMEOUT)
 
         r['workitem'].should_not eq(nil)
         r['workitem']['fields']['block_alpha'].should eq('was here')
