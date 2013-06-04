@@ -3,25 +3,58 @@
 module Ruote
 module Resque
 
+  # Raised when a job different from `Ruote::Resque::ReplyJob
+  # is found on the reply_queue.
   class InvalidJob < RuntimeError
   end
 
+  # Raised when a reply job has an invalid workitem.
   class InvalidWorkitem < RuntimeError
   end
 
+  # The receiver will poll the reply_queue in Resque, waiting for reply jobs.
+  # It does so in a new thread.
+  #
+  # By default it polls the reply_queue every 5 seconds, but this is configurable via
+  # the `interval` configuration option. See {Ruote::Resque}.
+  #
+  # You should launch the Receiver as soon as your engine is set up.
+  #
+  # @example Running a ruote-resque Receiver
+  #     Ruote::Resque::Receiver.new(dashboard)
+  #
+  # @example Overriding the handle_error method for custom exception handling
+  #     class Ruote::Resque::Receiver
+  #       def handle_error(e)
+  #         MyErrorHandler.handle(e)
+  #       end
+  #     end
+  #
+  #     Ruote::Resque::Receiver.new(dashboard)
+  #
   class Receiver < ::Ruote::Receiver
 
-    def initialize(*args)
+    # Retunrs a new Receiver instance and spawns a worker thread.
+    # @param [Ruote::Dashboard] cwes Accepts context, worker, engine or storage
+    # @param [Hash] options Passed on to Ruote, currently unused.
+    # @return [Receiver]
+    def initialize(cwes, options={})
       super
       @listener = listen
     end
 
+    # Stops the worker thread.
+    # @return [void]
     def shutdown
       @listener.kill
     end
 
+    # Called when an error is raised during the poll/reserve/process flow of the Receiver.
+    # You should override this method for custom error handling.
+    # By default it just logs the exception.
+    # @param [Exception] e
+    # @return [void]
     def handle_error(e)
-      # to be overridden by implementors
       Ruote::Resque.logger.error(e)
     end
 
