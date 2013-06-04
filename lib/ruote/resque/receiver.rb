@@ -94,8 +94,8 @@ module Resque
 
     def flunk(workitem, class_name, message, backtrace)
 
-      klass = Ruote::Resque::Helper.recursive_define(class_name, Class.new(RuntimeError))
-      args = [klass, message, backtrace]
+      error = Ruote::ReceivedError.new(class_name, message, backtrace)
+      args = [error, message, backtrace]
 
       super(workitem, *args)
 

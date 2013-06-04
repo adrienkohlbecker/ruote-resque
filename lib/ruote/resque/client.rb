@@ -1,7 +1,6 @@
 # encoding: UTF-8
 
 require 'logger'
-require 'ruote/resque/helper'
 require 'ruote/resque/job'
 require 'ruote/resque/reply_job'
 require 'ruote/resque/version'

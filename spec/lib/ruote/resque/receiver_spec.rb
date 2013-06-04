@@ -12,12 +12,15 @@ class BravoJob
   end
 end
 
+class BravoError < RuntimeError
+end
+
 class BravoFailureJob < BravoJob
   @queue = :rspec
   include Ruote::Resque::ParticipantModule
   extend Ruote::Resque::Job
   def self.perform(workitem)
-    raise 'im a failure'
+    raise BravoError, 'im a failure'
   end
 end
 
@@ -126,8 +129,8 @@ describe Ruote::Resque::Receiver do
         error = @board.errors(wfid).first
 
         expect(error.class).to eq(Ruote::ProcessError)
-        expect(error.klass).to eq('RuntimeError')
-        expect(error.message).to eq('raised: RuntimeError: im a failure')
+        expect(error.klass).to eq('Ruote::ReceivedError')
+        expect(error.message).to eq('raised: Ruote::ReceivedError: BravoError: im a failure')
         expect(error.trace).to include("/lib/resque/worker.rb:195:in `perform'")
 
         @board.register_participant 'resque_bravo', BravoJob
