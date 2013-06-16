@@ -12,6 +12,18 @@ describe Ruote::Resque do
 
   end
 
+  context '::reply' do
+
+    it 'enqueues a reply' do
+      Ruote::Resque.reply({'field' => 'test'})
+
+      expected_job = { 'class' => 'Ruote::Resque::ReplyJob', 'args' => [{'field' => 'test'}] }
+      expect(::Resque.pop(:ruote_replies)).to eq expected_job
+
+    end
+
+  end
+
   context '::register' do
 
     class MyAwesomeJob; end
