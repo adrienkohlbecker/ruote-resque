@@ -5,7 +5,6 @@ require 'ruote/storage/fs_storage'
 
 class BravoJob
   @queue = :rspec
-  include Ruote::Resque::ParticipantModule
   extend Ruote::Resque::Job
   def self.perform(workitem)
     workitem['fields']['resque_bravo'] = 'was here'
@@ -17,7 +16,6 @@ end
 
 class BravoFailureJob < BravoJob
   @queue = :rspec
-  include Ruote::Resque::ParticipantModule
   extend Ruote::Resque::Job
   def self.perform(workitem)
     raise BravoError, 'im a failure'
@@ -79,7 +77,9 @@ describe Ruote::Resque::Receiver do
     context 'with no exceptions raised' do
 
       before(:each) do
-        @board.register_participant 'resque_bravo', BravoJob
+        Ruote::Resque.register @board do
+          resque_bravo BravoJob, :rspec
+        end
       end
 
       it 'completes successfully' do
@@ -100,7 +100,9 @@ describe Ruote::Resque::Receiver do
     context 'with an exception raised' do
 
       before(:each) do
-        @board.register_participant 'resque_bravo', BravoFailureJob
+        Ruote::Resque.register @board do
+          resque_bravo BravoFailureJob, :rspec
+        end
       end
 
       it 'routes to the error handler' do
@@ -135,7 +137,9 @@ describe Ruote::Resque::Receiver do
         expect(error.message).to eq('raised: Ruote::ReceivedError: BravoError: im a failure')
         expect(error.trace).to include("/lib/resque/worker.rb:195:in `perform'")
 
-        @board.register_participant 'resque_bravo', BravoJob
+        Ruote::Resque.register @board do
+          resque_bravo BravoJob, :rspec
+        end
         @board.replay_at_error(error)
 
         r = @board.wait_for(wfid, :timeout => RUOTE_WAIT_TIMEOUT)
