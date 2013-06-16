@@ -11,12 +11,12 @@ module Ruote
     # A basic configuration object
     # @example Setting up ruote-resque (default values shown)
     #     Ruote::Resque.configure do |config|
-    #       config.reply_queue = :ruote_reply
+    #       config.reply_queue = :ruote_replies
     #       config.logger = Logger.new(STDOUT).tap { |log| log.level = Logger::INFO }
     #       config.interval = 5
     #     end
     class Configuration
-      # The queue used for message passing between Resque jobs and Ruote (defaults to `:ruote_reply`)
+      # The queue used for message passing between Resque jobs and Ruote (defaults to `:ruote_replies`)
       attr_accessor :reply_queue
       # The logger used (defaults to STDOUT with log level INFO)
       attr_accessor :logger
@@ -56,7 +56,7 @@ end
 
 # setup default configuration
 Ruote::Resque.configure do |config|
-  config.reply_queue = :ruote_reply
+  config.reply_queue = :ruote_replies
   config.logger = Logger.new(STDOUT).tap { |log| log.level = Logger::INFO }
   config.interval = 5
 end

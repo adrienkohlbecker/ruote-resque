@@ -53,7 +53,7 @@ require 'ruote/resque'
 
 # Configure the library (optional, default values shown)
 Ruote::Resque.configure do |config|
-  config.reply_queue = :ruote_reply
+  config.reply_queue = :ruote_replies
   config.logger = Logger.new(STDOUT).tap { |log| log.level = Logger::INFO }
   config.interval = 5
 end
@@ -85,7 +85,7 @@ require 'ruote/resque/client'
 
 # Duplicate the configuration if you are using custom parameters
 Ruote::Resque.configure do |config|
-  config.reply_queue = :ruote_reply
+  config.reply_queue = :ruote_replies
   config.logger = Logger.new(STDOUT).tap { |log| log.level = Logger::INFO }
   config.interval = 5
 end

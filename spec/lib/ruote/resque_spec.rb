@@ -20,8 +20,8 @@ describe Ruote::Resque do
 
     context '::reply_queue' do
 
-      it 'is :ruote_reply by default' do
-        expect(Ruote::Resque.configuration.reply_queue).to eq :ruote_reply
+      it 'is :ruote_replies by default' do
+        expect(Ruote::Resque.configuration.reply_queue).to eq :ruote_replies
       end
 
       it 'is setable' do
