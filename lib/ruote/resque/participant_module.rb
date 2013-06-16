@@ -12,7 +12,7 @@ module Resque
   # @example Registering a job class as participant
   #     class MyAwesomeJob
   #       extend Ruote::Resque::Job
-  #       extend Ruote::Resque::ParticipantModule
+  #       include Ruote::Resque::ParticipantModule
   #
   #       @queue = :my_queue
   #

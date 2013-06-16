@@ -105,7 +105,7 @@ There are two ways of registering participants.
 
 # Include ruote-resque inside your jobs
 class MyAwesomeJob
-  extend Ruote::Resque::ParticipantModule
+  include Ruote::Resque::ParticipantModule
   extend Ruote::Resque::ReplyJob
 
   @queue = :my_queue
