@@ -3,6 +3,7 @@
 require 'ruote'
 require 'ruote/resque/client'
 require 'ruote/resque/participant'
+require 'ruote/resque/participant_registrar'
 require 'ruote/resque/receiver'
 
 module Ruote
@@ -17,5 +18,23 @@ module Ruote
   #
   # See the {file:README} for usage instructions
   module Resque
+
+    # Registers resque participants using a DSL.
+    # @example Using the dsl
+    #     Ruote::Resque.register dashboard do
+    #       be_awesome MyAwesomeJob, :my_queue
+    #       be_really_awesome 'MyReallyAwesomeJob', :my_queue, :forget => true
+    #     end
+    # @example Using the participant method
+    #     Ruote::Resque.register dashboard do
+    #       participant /be_.*/, BeSomething, :my_queue
+    #     end
+    # @param [Ruote::Dashboard] dashboard the ruote dashboard
+    # @return [void]
+    def self.register(dashboard, &block)
+      registrar = Ruote::Resque::ParticipantRegistrar.new(dashboard)
+      registrar.instance_eval(&block)
+    end
+
   end
 end

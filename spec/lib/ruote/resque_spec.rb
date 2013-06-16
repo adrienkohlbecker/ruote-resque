@@ -12,6 +12,23 @@ describe Ruote::Resque do
 
   end
 
+  context '::register' do
+
+    class MyAwesomeJob; end
+
+    let(:mock_dashboard) { Object.new }
+
+    it 'allows registration of participants with a block' do
+
+      mock_dashboard.should_receive(:register_participant).with('be_awesome', Ruote::Resque::Participant, {:class => MyAwesomeJob, :queue => :rspec})
+      Ruote::Resque.register mock_dashboard do
+        be_awesome MyAwesomeJob, :rspec
+      end
+
+    end
+
+  end
+
   context '::configuration' do
 
     it 'returns a Configuration object' do
