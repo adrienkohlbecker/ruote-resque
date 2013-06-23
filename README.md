@@ -6,8 +6,8 @@
 - **Rdoc**: [rdoc.info/gems/ruote-resque](http://rdoc.info/gems/ruote-resque)
 - **Author**: Adrien Kohlbecker
 - **License**: MIT License
-- **Latest Version**: 0.0.1
-- **Release Date**: `nil`
+- **Latest Version**: 0.1.0
+- **Release Date**: June 23, 2013
 
 ## Synopsis
 
@@ -148,3 +148,9 @@ ruote-resque has been tested on Ruby 1.8+.
 5. Commit your changes (`git commit -am 'Add some feature'`)
 6. Push to the branch (`git push origin my-new-feature`)
 7. Create new Pull Request
+
+## Changelog
+
+- **June 23, 2013**: 0.1.0 release
+    - Initial release
+
