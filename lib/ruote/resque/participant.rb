@@ -1,29 +1,12 @@
 # encoding: UTF-8
 
-
 # A module to be included in your Resque jobs
 # to be able to register them as participants.
 #
 # Note that the participant should have a queue, either via the `@queue` variable
 # when the class is accessible to Ruote, or via the `:queue` option on registration
 #
-# @example Registering a job class as participant
-#     class MyAwesomeJob
-#       extend Ruote::Resque::Job
-#       include Ruote::Resque::Participant
-#
-#       @queue = :my_queue
-#
-#       def self.perform(workitem)
-#         workitem['fields']['awesome'] = true
-#       end
-#     end
-#
-#     engine.register_participant 'be_awesome', MyAwesomeJob
-#     # you can also override the queue
-#     engine.register_participant 'be_awesome', MyAwesomeJob, :queue => :my_other_queue
-#
-# @example Register a participant when you do not have access to the class inside your Ruote process
+# @example Register a participant
 #     # This is defined on a remote Resque worker
 #     # You do not need to extend Participant in this case
 #     class MyAwesomeJob
@@ -37,10 +20,11 @@
 #
 #     # Use it like this in your Ruote process
 #     engine.register_participant 'be_awesome', Ruote::Resque::Participant, :class => 'MyAwesomeJob', :queue => :my_queue
+#     # Or register it va the DSL
+#     Ruote::Resque.register(dashboard) do
+#       be_awesome 'MyAwesomeJob', :my_queue
+#     end
 # A resque participant implementation.
-# @see Ruote::Resque::Participant
-# @example
-#     dashboard.register_participant 'be_awesome', Ruote::Resque::Participant, :class => 'MyAwesomeJob', :queue => :my_queue
 class Ruote::Resque::Participant
   include Ruote::LocalParticipant
 

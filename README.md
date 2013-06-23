@@ -51,20 +51,6 @@ Then when booting your engine do this :
 
 require 'ruote/resque'
 
-# Configure the library (optional, default values shown)
-Ruote::Resque.configure do |config|
-  config.reply_queue = :ruote_replies
-  config.logger = Logger.new(STDOUT).tap { |log| log.level = Logger::INFO }
-  config.interval = 5
-end
-
-# Override the default error handler (optional, but recommended. Default is to log at ERROR level)
-class Ruote::Resque::Receiver
-  def handle_error(e)
-    MyErrorHandler.handle(e)
-  end
-end
-
 # Run the poller thread.
 Ruote::Resque::Receiver.new(dashboard)
 
@@ -74,7 +60,9 @@ Ruote::Resque::Receiver.new(dashboard)
 
 Add to your Resque worker instance gemfile :
 
-    gem 'ruote-resque'
+```ruby
+gem 'ruote-resque', :require => false
+```
 
 Then when booting your worker do this :
 
@@ -83,47 +71,13 @@ Then when booting your worker do this :
 # You should not require the full library inside your worker, the client will suffice
 require 'ruote/resque/client'
 
-# Duplicate the configuration if you are using custom parameters
-Ruote::Resque.configure do |config|
-  config.reply_queue = :ruote_replies
-  config.logger = Logger.new(STDOUT).tap { |log| log.level = Logger::INFO }
-  config.interval = 5
-end
-
 ```
 
 ### Participants
 
-There are two ways of registering participants.
-
-- When your Ruote instance has access to the jobs
-- When it does not (eg: jobs are on a distant worker)
-
-#### If ruote has access to the jobs
-
 ```ruby
 
-# Include ruote-resque inside your jobs
-class MyAwesomeJob
-  include Ruote::Resque::ParticipantModule
-  extend Ruote::Resque::Job
-
-  @queue = :my_queue
-
-  def self.perform(workitem)
-    workitem['fields']['be_awesome'] = true
-  end
-end
-
-
-dashboard.register_participant 'be_awesome', MyAwesomeJob
-```
-
-#### If ruote does not have access to your jobs
-
-```ruby
-
-# Inside your worker, add Job to your jobs
+# Inside your worker, add Ruote::Resque::Job to your jobs
 class MyAwesomeJob
   extend Ruote::Resque::Job
 
@@ -135,34 +89,67 @@ class MyAwesomeJob
 end
 
 # Inside your Ruote instance
+Ruote::Resque.register(dashboard) do
+  be_awesome 'MyAwesomeJob', :my_queue
+end
+```
+
+There are two other ways to register participants:
+
+```ruby
+Ruote::Resque.register(dashboard) do
+  participant 'be_awesome', 'MyAwesomeJob', :my_queue
+end
+
+# OR (not recommended)
+
 dashboard.register_participant 'be_awesome', Ruote::Resque::Participant, :class => 'MyAwesomeJob', :queue => :my_queue
+```
+
+Note that you can pass options to the participant:
+
+```ruby
+Ruote::Resque.register(dashboard) do
+  be_awesome 'MyAwesomeJob', :my_queue, :forget => true
+end
+```
+
+### Configuration
+
+```ruby
+
+# Configure the library (optional, default values shown)
+# You should duplicate this configuration on both
+# your Ruote instance and your Resque instance
+Ruote::Resque.configure do |config|
+  config.reply_queue = :ruote_replies
+  config.logger = Logger.new(STDOUT).tap { |log| log.level = Logger::INFO }
+  config.interval = 5
+end
+
+# Override the default error handler (optional, but recommended. Default is to log at ERROR level)
+# Do this in your Ruote instance
+class Ruote::Resque::Receiver
+  def handle_error(e)
+    MyErrorHandler.handle(e)
+  end
+end
+
 ```
 
 ## Requirements
 
 A functional installation of [Ruote](http://ruote.rubyforge.org) and [Resque](http://github.com/resque/resque) is needed.
+Note that at the time of writing the release of Ruote on rubygems is very old and not supported. Use it from git.
 
 ruote-resque has been tested on Ruby 1.8+.
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'ruote-resque'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install ruote-resque
 
 ## Contributing
 
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Run the tests (`bundle exec rspec`)
-6. Create new Pull Request
+3. Do some changes
+4. Run the tests (`bundle exec rspec`)
+5. Commit your changes (`git commit -am 'Add some feature'`)
+6. Push to the branch (`git push origin my-new-feature`)
+7. Create new Pull Request
