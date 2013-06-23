@@ -15,9 +15,9 @@ describe Ruote::Resque do
   context '::reply' do
 
     it 'enqueues a reply' do
-      Ruote::Resque.reply({'field' => 'test'})
+      Ruote::Resque.reply({ 'field' => 'test' })
 
-      expected_job = { 'class' => 'Ruote::Resque::ReplyJob', 'args' => [{'field' => 'test'}] }
+      expected_job = { 'class' => 'Ruote::Resque::ReplyJob', 'args' => [{ 'field' => 'test' }] }
       expect(::Resque.pop(:ruote_replies)).to eq expected_job
 
     end
@@ -32,7 +32,7 @@ describe Ruote::Resque do
 
     it 'allows registration of participants with a block' do
 
-      mock_dashboard.should_receive(:register_participant).with('be_awesome', Ruote::Resque::Participant, {:class => MyAwesomeJob, :queue => :rspec})
+      mock_dashboard.should_receive(:register_participant).with('be_awesome', Ruote::Resque::Participant, { :class => MyAwesomeJob, :queue => :rspec })
       Ruote::Resque.register mock_dashboard do
         be_awesome MyAwesomeJob, :rspec
       end

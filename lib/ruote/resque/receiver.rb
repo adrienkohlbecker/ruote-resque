@@ -38,7 +38,7 @@ module Resque
     # @param [Ruote::Dashboard] cwes Accepts context, worker, engine or storage
     # @param [Hash] options Passed on to Ruote, currently unused.
     # @return [Receiver]
-    def initialize(cwes, options={})
+    def initialize(cwes, options = {})
       super
       @listener = listen
     end

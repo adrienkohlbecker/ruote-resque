@@ -1,7 +1,7 @@
+# encoding: UTF-8
+
 module Ruote
 module Resque
-
-
 
 # An object to easy Participant registration
 # @example Register a participant
@@ -32,9 +32,9 @@ class ParticipantRegistrar
   # @param [#to_s] queue the queue of the job
   # @param [Hash] options options to be passed on to +Ruote::Resque::Participant+
   # @return [void]
-  def participant(name, klass, queue, options={}, &block)
-    options.merge!({:class => klass, :queue => queue})
-    @dashboard.register_participant(name, Ruote::Resque::Participant, options, &block)
+  def participant(name, klass, queue, options = {})
+    options.merge!({ :class => klass, :queue => queue })
+    @dashboard.register_participant(name, Ruote::Resque::Participant, options)
   end
 
 end
