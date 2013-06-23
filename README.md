@@ -39,21 +39,21 @@ Note that:
 
 Add to your Ruote instance gemfile :
 
-    # The version released on RubyGems is old and not supported.
-    # Note that ruote is not a hard dependency of ruote-resque,
-    # to allow for lightweight use as a client (see below)
-    gem 'ruote', :git => 'git://github.com/jmettraux/ruote.git'
-    gem 'ruote-resque'
+```ruby
+# The version released on RubyGems is old and not supported.
+# Note that ruote is not a hard dependency of ruote-resque,
+# to allow for lightweight use as a client (see below)
+gem 'ruote', :git => 'git://github.com/jmettraux/ruote.git'
+gem 'ruote-resque'
+```
 
 Then when booting your engine do this :
 
 ```ruby
-
 require 'ruote/resque'
 
 # Run the poller thread.
 Ruote::Resque::Receiver.new(dashboard)
-
 ```
 
 #### Inside your Resque worker instance
@@ -67,16 +67,13 @@ gem 'ruote-resque', :require => false
 Then when booting your worker do this :
 
 ```ruby
-
 # You should not require the full library inside your worker, the client will suffice
 require 'ruote/resque/client'
-
 ```
 
 ### Participants
 
 ```ruby
-
 # Inside your worker, add Ruote::Resque::Job to your jobs
 class MyAwesomeJob
   extend Ruote::Resque::Job
@@ -117,7 +114,6 @@ end
 ### Configuration
 
 ```ruby
-
 # Configure the library (optional, default values shown)
 # You should duplicate this configuration on both
 # your Ruote instance and your Resque instance
@@ -134,7 +130,6 @@ class Ruote::Resque::Receiver
     MyErrorHandler.handle(e)
   end
 end
-
 ```
 
 ## Requirements
