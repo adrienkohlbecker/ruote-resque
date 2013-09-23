@@ -187,7 +187,7 @@ describe Ruote::Resque::Receiver do
         expect(error.class).to eq(Ruote::ProcessError)
         expect(error.klass).to eq('Ruote::ReceivedError')
         expect(error.message).to eq('raised: Ruote::ReceivedError: BravoError: im a failure')
-        expect(error.trace).to include("/lib/resque/worker.rb:195:in `perform'")
+        expect(error.trace).not_to be_empty
 
         Ruote::Resque.register @board do
           resque_bravo BravoJob, :rspec
